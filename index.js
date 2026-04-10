@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import Stripe from "stripe";
 
 const app = express();
@@ -13,7 +12,17 @@ if (!STRIPE_SECRET_KEY) {
 
 const stripe = new Stripe(STRIPE_SECRET_KEY);
 
-app.use(cors());
+// Manually set CORS headers on every response
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
