@@ -37,9 +37,10 @@ app.post("/create-payment-intent", async (req, res) => {
       return res.status(400).json({ error: "No items provided." });
     }
 
+    const shippingCost = Math.round(Number(req.body.shippingCost || 0) * 100);
     const amount = items.reduce((sum, i) =>
       sum + Math.round(Number(i.price) * 100) * Number(i.qty), 0
-    );
+    ) + shippingCost;
 
     const intent = await stripe.paymentIntents.create({
       amount,
