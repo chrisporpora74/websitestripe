@@ -3,27 +3,21 @@ import cors from "cors";
 import Stripe from "stripe";
 
 const app = express();
+const PORT = process.env.PORT || 4242;
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 if (!STRIPE_SECRET_KEY) {
-  console.error("Missing STRIPE_SECRET_KEY in environment variables.");
+  console.error("Missing STRIPE_SECRET_KEY");
   process.exit(1);
 }
 
 const stripe = new Stripe(STRIPE_SECRET_KEY);
 
-const corsOptions = {
-  origin: "*",
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
-// Health check
 app.get("/", (req, res) => {
-  res.json({ status: "ok", message: "Astral Light Healings server is running." });
+  res.json({ status: "ok" });
 });
 
 app.post("/create-payment-intent", async (req, res) => {
@@ -35,8 +29,8 @@ app.post("/create-payment-intent", async (req, res) => {
     }
 
     const amount = items.reduce((sum, i) =>
-      sum + Math.round(Number(i.price) * 100) * Number(i.qty)
-    , 0);
+      sum + Math.round(Number(i.price) * 100) * Number(i.qty), 0
+    );
 
     const intent = await stripe.paymentIntents.create({
       amount,
@@ -73,5 +67,6 @@ app.post("/create-payment-intent", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 4242;
-app.listen(PORT, "0.0.0.0", () => console.log(`Astral Light server running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
