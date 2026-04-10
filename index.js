@@ -65,7 +65,8 @@ app.post("/create-payment-intent", async (req, res) => {
         address:   customer?.address   || "",
         city:      customer?.city      || "",
         state:     customer?.state     || "",
-        zip:       customer?.zip       || ""
+        zip:       customer?.zip       || "",
+        shippingMethod: customer?.shippingMethod || ""
       }
     });
 
