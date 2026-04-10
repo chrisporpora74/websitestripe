@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Stripe backend for Astral Light Healings",
   "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
   "license": "ISC",
   "type": "module",
   "engines": {
