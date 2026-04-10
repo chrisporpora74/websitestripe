@@ -3,10 +3,11 @@ import cors from "cors";
 import Stripe from "stripe";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 if (!STRIPE_SECRET_KEY) {
-  console.error("Missing STRIPE_SECRET_KEY in environment variables.");
+  console.error("ERROR: Missing STRIPE_SECRET_KEY");
   process.exit(1);
 }
 
@@ -15,13 +16,21 @@ const stripe = new Stripe(STRIPE_SECRET_KEY);
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.post("/create-payment-intent", async (req, res) => {
   try {
     const { items, customer } = req.body;
 
+    if (!items || !items.length) {
+      return res.status(400).json({ error: "No items provided." });
+    }
+
     const amount = items.reduce((sum, i) =>
-      sum + Math.round(Number(i.price) * 100) * Number(i.qty)
-    , 0);
+      sum + Math.round(Number(i.price) * 100) * Number(i.qty), 0
+    );
 
     const intent = await stripe.paymentIntents.create({
       amount,
@@ -58,5 +67,6 @@ app.post("/create-payment-intent", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 4242;
-app.listen(PORT, () => console.log(`Stripe server running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on 0.0.0.0:${PORT}`);
+});
