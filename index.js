@@ -3,11 +3,11 @@ import cors from "cors";
 import Stripe from "stripe";
 
 const app = express();
-const PORT = process.env.PORT || 4242;
+const PORT = process.env.PORT || 3000;
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 if (!STRIPE_SECRET_KEY) {
-  console.error("Missing STRIPE_SECRET_KEY");
+  console.error("ERROR: Missing STRIPE_SECRET_KEY");
   process.exit(1);
 }
 
@@ -68,5 +68,5 @@ app.post("/create-payment-intent", async (req, res) => {
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server listening on 0.0.0.0:${PORT}`);
 });
