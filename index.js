@@ -12,12 +12,29 @@ if (!STRIPE_SECRET_KEY) {
 
 const stripe = new Stripe(STRIPE_SECRET_KEY);
 
-app.use(cors());
+// Allow requests from any origin (required for static site hosts)
+const corsOptions = {
+  origin: "*",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight requests
 app.use(express.json());
+
+// Health check — so browser visits show something friendly
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "Astral Light Healings server is running." });
+});
 
 app.post("/create-payment-intent", async (req, res) => {
   try {
     const { items, customer } = req.body;
+
+    if (!items || !items.length) {
+      return res.status(400).json({ error: "No items provided." });
+    }
 
     const amount = items.reduce((sum, i) =>
       sum + Math.round(Number(i.price) * 100) * Number(i.qty)
@@ -59,4 +76,4 @@ app.post("/create-payment-intent", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 4242;
-app.listen(PORT, () => console.log(`Stripe server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Astral Light server running on port ${PORT}`));
