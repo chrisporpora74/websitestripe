@@ -12,7 +12,6 @@ if (!STRIPE_SECRET_KEY) {
 
 const stripe = new Stripe(STRIPE_SECRET_KEY);
 
-// Allow requests from any origin (required for static site hosts)
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "OPTIONS"],
@@ -20,10 +19,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight requests
 app.use(express.json());
 
-// Health check — so browser visits show something friendly
+// Health check
 app.get("/", (req, res) => {
   res.json({ status: "ok", message: "Astral Light Healings server is running." });
 });
